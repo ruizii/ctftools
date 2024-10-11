@@ -32,6 +32,10 @@ function help() {
     echo -e "\t${BLUE}shitty-port-forward.sh${ENDCOLOR} 10.10.14.7 1234"
 }
 
+function error() {
+    echo -e "${RED}[x]${ENDCOLOR} Error! $1"
+}
+
 if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]] || [[ "$2" == "-h" ]] || [[ "$2" == "--help" ]] || [[ "$3" == "-h" ]] || [[ "$3" == "--help" ]]; then
     help
     exit 0
@@ -39,8 +43,7 @@ fi
 
 if [[ "$#" -ne 2 ]]; then
     echo ""
-    echo -e "${RED}[x]${ENDCOLOR} Error! Uso incorrecto"
-
+    error "Uso incorrecto"
     exit 1
 fi
 
@@ -49,24 +52,26 @@ port="$2"
 
 if ! grep -P '^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$' -q <<<"$address"; then
     echo ""
-    echo -e "${RED}[x]${ENDCOLOR} Error! IP invalida"
+    error "IP Invalida"
     exit 1
 fi
 
 if ! [[ $port =~ ^[0-9]+$ ]]; then
     echo ""
-    echo -e "${RED}[x]${ENDCOLOR} Error! El puerto debe ser un número"
+    error "El puerto debe ser un numero"
     exit 1
 fi
 
 if [[ $port -gt 65535 ]] || [[ $port -lt 1 ]]; then
     echo ""
-    echo -e "${RED}[x]${ENDCOLOR} Error! Numero de puerto invalido"
+    error "Numero de puerto invalido"
     exit 1
 fi
 
 echo ""
+
 echo -ne "\t${BLUE}[+]${ENDCOLOR} "
 echo -e "sudo netsh interface portproxy ${BLUE}add${ENDCOLOR} v4tov4 listenport=${BLUE}${port}${ENDCOLOR} listenaddress=${BLUE}${address}${ENDCOLOR} connectport=${BLUE}${port}${ENDCOLOR} connectaddress=${BLUE}127.0.0.1${ENDCOLOR}"
+
 echo -ne "\t${BLUE}[+]${ENDCOLOR} "
 echo -e "sudo netsh interface portproxy ${BLUE}delete${ENDCOLOR} v4tov4 listenport=${BLUE}${port}${ENDCOLOR} listenaddress=${BLUE}${address}${ENDCOLOR}"
