@@ -30,20 +30,21 @@ function help() {
 
     echo -e "Ejemplo:"
     echo -e "\t${BLUE}shitty-port-forward.sh${ENDCOLOR} 10.10.14.7 1234"
+
+    exit 0
 }
 
 function error() {
     echo -e "\n${RED}[x]${ENDCOLOR} Error! $1"
+    exit 1
 }
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]] || [[ "$2" == "-h" ]] || [[ "$2" == "--help" ]] || [[ "$3" == "-h" ]] || [[ "$3" == "--help" ]]; then
     help
-    exit 0
 fi
 
 if [[ "$#" -ne 2 ]]; then
     error "Uso incorrecto"
-    exit 1
 fi
 
 address="$1"
@@ -51,23 +52,22 @@ port="$2"
 
 if ! grep -P '^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$' -q <<<"$address"; then
     error "IP Invalida"
-    exit 1
 fi
 
 if ! [[ $port =~ ^[0-9]+$ ]]; then
     error "El puerto debe ser un numero"
-    exit 1
 fi
 
 if [[ $port -gt 65535 ]] || [[ $port -lt 1 ]]; then
     error "Numero de puerto invalido"
-    exit 1
 fi
 
 echo ""
 
+# Crear regla
 echo -ne "\t${BLUE}[+]${ENDCOLOR} "
 echo -e "sudo netsh interface portproxy ${BLUE}add${ENDCOLOR} v4tov4 listenport=${BLUE}${port}${ENDCOLOR} listenaddress=${BLUE}${address}${ENDCOLOR} connectport=${BLUE}${port}${ENDCOLOR} connectaddress=${BLUE}127.0.0.1${ENDCOLOR}"
 
+# Eliminar regla
 echo -ne "\t${BLUE}[+]${ENDCOLOR} "
 echo -e "sudo netsh interface portproxy ${BLUE}delete${ENDCOLOR} v4tov4 listenport=${BLUE}${port}${ENDCOLOR} listenaddress=${BLUE}${address}${ENDCOLOR}"
