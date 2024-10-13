@@ -5,15 +5,15 @@ ENDCOLOR="\e[0m"
 
 if [[ "$1" == "smb" || "$1" == "http" ]]; then
     echo -ne "\n"
-    eza -T /usr/share/peass-ng
+    eza -T /usr/share/peass/
     echo -ne "\n"
 
     if [[ "$1" == "http" ]]; then
-        sudo updog -d /usr/share/peass-ng/ -p 80
+        sudo python -m http.server 80 -d /usr/share/peass/
     else
-        sudo smbserver.py -smb2support share /usr/share/peass-ng/
+        sudo impacket-smbserver -smb2support share /usr/share/peass/
     fi
 else
-    echo -e "${RED}[x]${ENDCOLOR} Invalid option\n"
+    echo -e "\n${RED}[x]${ENDCOLOR} Invalid option\n"
     echo "Usage: shitty-peass-server [smb|http]"
 fi
