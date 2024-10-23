@@ -9,9 +9,9 @@ if [[ "$1" == "smb" || "$1" == "http" ]]; then
     echo -ne "\n"
 
     if [[ "$1" == "http" ]]; then
-        sudo python -m http.server 80 -d /usr/share/peass/
+        python -m http.server 80 -d /usr/share/peass/
     else
-        sudo impacket-smbserver -smb2support share /usr/share/peass/
+        impacket-smbserver -smb2support share /usr/share/peass/
     fi
 else
     echo -e "\n${RED}[x]${ENDCOLOR} Invalid option\n"
