@@ -39,7 +39,7 @@ function error() {
     exit 1
 }
 
-if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]] || [[ "$2" == "-h" ]] || [[ "$2" == "--help" ]] || [[ "$3" == "-h" ]] || [[ "$3" == "--help" ]]; then
+if [[ "$1" == "-h" || "$1" == "--help" || "$2" == "-h" || "$2" == "--help" || "$3" == "-h" || "$3" == "--help" ]]; then
     help
 fi
 
@@ -58,7 +58,7 @@ if ! [[ $port =~ ^[0-9]+$ ]]; then
     error "El puerto debe ser un numero"
 fi
 
-if [[ $port -gt 65535 ]] || [[ $port -lt 1 ]]; then
+if [[ "$port" -gt 65535 ]] || [[ "$port" -lt 1 ]]; then
     error "Numero de puerto invalido"
 fi
 
