@@ -52,4 +52,5 @@ while true; do
     fi
 
     curl -q -k -G "$1" --data-urlencode "cmd=${cmd}"
+    echo ""
 done
