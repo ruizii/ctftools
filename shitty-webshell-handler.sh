@@ -51,5 +51,5 @@ while true; do
         exit 0
     fi
 
-    curl -q -G "$1" --data-urlencode "cmd=${cmd}"
+    curl -q -k -G "$1" --data-urlencode "cmd=${cmd}"
 done
