@@ -3,16 +3,17 @@
 RED="\e[31m"
 ENDCOLOR="\e[0m"
 
-outfile="scan.txt"
-quick_outfile="quick_scan.txt"
-url=""
-quick=0
+outfile_tcp="tcp_scan.txt"
+outfile_udp="udp_scan.txt"
+udp=0
+current_filename=""
 positional_amount=0
+target=""
 
 trap ctrl_c INT
 
 function ctrl_c() {
-    sudo rm -f "$outfile"
+    sudo rm -f "$current_filename"
     echo -e "\n${RED}[x]${ENDCOLOR} Aborting scan" >&2
     exit 1
 }
@@ -20,32 +21,17 @@ function ctrl_c() {
 while [ "$#" -gt 0 ]; do
     case "$1" in
     -u)
-        url="$1"
-        shift 2
+        udp=1
+        current_filename="$outfile_udp"
+        shift 1
         ;;
     -o)
-        outfile="$2"
-        quick_outfile="$2"
+        current_filename="$2"
         shift 2
-        ;;
-    -q)
-        quick=1
-        shift 1
-        ;;
-
-    --url=*)
-        url="${1#*=}"
-        shift 1
-        ;;
-
-    --quick)
-        quick=1
-        shift 1
         ;;
 
     --outfile=*)
-        outfile="${1#*=}"
-        quick_outfile="${1#*=}"
+        current_filename="${1#*=}"
         shift 1
         ;;
 
@@ -59,32 +45,39 @@ while [ "$#" -gt 0 ]; do
             echo -e "${RED}[X]${ENDCOLOR} Can't have more than 1 positional argument" >&2
             exit 1
         fi
-        url="$1"
+        target="$1"
         shift 1
         ;;
     esac
 done
 
-if [[ -z "$url" ]]; then
+if [[ -z "$current_filename" ]]; then
+    if [[ "$udp" -eq 1 ]]; then
+        current_filename="$outfile_udp"
+    else
+        current_filename="$outfile_tcp"
+    fi
+fi
+
+if [[ -z "$target" ]]; then
     echo -e "${RED}[x]${ENDCOLOR} Please provide IP address or domain name to scan" >&2
     exit 1
 fi
 
-if [[ "$quick" -eq 1 ]]; then
+if [[ "$udp" -eq 1 ]]; then
     if [[ -f /etc/arch-release ]]; then
-        sudo nmap -sS -p- --open --min-rate=3000 -vvv "$url" -oN "$quick_outfile" | bat -pp -l python
-        sudo chown "$USER":"$USER" "$quick_outfile"
+        sudo nmap -sU -F -sCV -T4 --open -vvv -n "$target" -oN "$current_filename" | bat -pp -l python
+        sudo chown "$USER":"$USER" "$current_filename"
     else
-        sudo nmap -sS -p- --open --min-rate=3000 -vvv "$url" -oN "$quick_outfile" | batcat -pp -l python
-        sudo chown "$USER":"$USER" "$quick_outfile"
+        sudo nmap -sU -F -sCV -T4 --open -vvv -n "$target" -oN "$current_filename" | batcat -pp -l python
+        sudo chown "$USER":"$USER" "$current_filename"
     fi
-    exit 0
-fi
-
-if [[ -f /etc/arch-release ]]; then
-    sudo nmap -sS -p- -sCV -T4 --open -vvv "$url" -oN "$outfile" | bat -pp -l python
-    sudo chown "$USER":"$USER" "$outfile"
 else
-    sudo nmap -sS -p- -sCV -T4 --open -vvv "$url" -oN "$outfile" | batcat -pp -l python
-    sudo chown "$USER":"$USER" "$outfile"
+    if [[ -f /etc/arch-release ]]; then
+        sudo nmap -sS -p- -sCV -T4 --open -vvv -n "$target" -oN "$current_filename" | bat -pp -l python
+        sudo chown "$USER":"$USER" "$current_filename"
+    else
+        sudo nmap -sS -p- -sCV -T4 --open -vvv -n "$target" -oN "$current_filename" | batcat -pp -l python
+        sudo chown "$USER":"$USER" "$current_filename"
+    fi
 fi
