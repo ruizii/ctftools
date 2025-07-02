@@ -23,7 +23,8 @@ function usage() {
     echo "Usage: scan [options] <ip>"
     echo -e "\nOptions:"
     echo -e "\t-u\tUDP scan"
-    echo -e "\t-o FILE\toutput file name"
+    echo -e "\t-o FILE\tOutput file name"
+    echo -e "\t-h \tPrint this message and exit"
 }
 
 while [ "$#" -gt 0 ]; do
