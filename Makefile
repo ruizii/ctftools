@@ -1,5 +1,5 @@
 install:
-	mkdir -p ~/.local/share/shitty-ctftools/bin
-	rm -f ~/.local/share/shitty-ctftools/bin/*
-	cp ./src/* ~/.local/share/shitty-ctftools/bin/
+	mkdir -p ~/.local/share/ctftools/bin
+	rm -f ~/.local/share/ctftools/bin/*
+	cp ./src/* ~/.local/share/ctftools/bin/
 
