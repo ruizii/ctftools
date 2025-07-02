@@ -5,9 +5,13 @@ BLUE="\e[34m"
 YELLOW="\e[33m"
 ENDCOLOR="\e[0m"
 
-if [[ "$#" -ne 2 ]]; then
-    echo -e "\n${RED}[x]${ENDCOLOR} Error: Incorrect arguments provided"
+function usage() {
     echo -e "\nUsage: revshell (bash | php | nc | python | powershell) <port>"
+}
+
+if [[ "$#" -ne 2 ]]; then
+    echo -e "${RED}[x]${ENDCOLOR} Error: Incorrect arguments provided"
+    usage
     exit 1
 fi
 
@@ -42,7 +46,7 @@ elif [[ "$1" == "powershell" ]]; then
     echo -e "\t${YELLOW}-${ENDCOLOR} powershell -e $payload"
 
 else
-    echo -e "\n${RED}[x]${ENDCOLOR} Error: Invalid option"
-    echo -e "\nUsage: revshell (bash | php | nc | python | powershell) <port>"
+    echo -e "${RED}[x]${ENDCOLOR} Error: Invalid option"
+    usage
     exit 1
 fi
