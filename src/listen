@@ -6,10 +6,11 @@ YELLOW="\e[33m"
 ENDCOLOR="\e[0m"
 
 if [[ "$#" -ne 2 ]]; then
-    echo -e "\n${RED}[x]${ENDCOLOR} Must provide OS and port number to listen"
-    echo -e "${YELLOW}[!]${ENDCOLOR} OS options: windows or linux"
+    echo -e "\n${RED}[x]${ENDCOLOR} Error: Incorrect number of arguments"
 
-    echo -e "\nUsage: listen <OS> <PORT>"
+    echo -e "\nUsage:"
+    echo -e "\tlisten linux <port>"
+    echo -e "\tlisten windows <port>"
     exit 1
 fi
 

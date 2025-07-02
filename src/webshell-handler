@@ -17,7 +17,6 @@ function help() {
 
 function error() {
     echo -e "\n${RED}[x]${ENDCOLOR} Error: $1"
-    exit 1
 }
 
 if [[ "$1" == "-h" || "$1" == "--help" || "$2" == "-h" || "$2" == "--help" ]]; then
@@ -26,6 +25,9 @@ fi
 
 if [[ "$#" -ne 1 ]]; then
     error "No url provided"
+
+    echo -e "\nUsage: webshell-handler <URL>"
+    exit 1
 fi
 
 while true; do
