@@ -1,18 +1,12 @@
 #!/bin/bash
 
 RED="\e[31m"
-BLUE="\e[34m"
-MAGENTA="\e[35m"
 ENDCOLOR="\e[0m"
 
 function help() {
-    echo -e "Usage:"
-    echo -e "\t${BLUE}webshell-handler${ENDCOLOR} ${MAGENTA}<URL>${ENDCOLOR}"
+    echo -e "\nUsage: webshell-handler <url>"
 
-    echo -e "Example:"
-    echo -e "\t${BLUE}webshell-handler${ENDCOLOR} 'http://10.10.11.34/uploads/shell.php'"
-
-    exit 0
+    echo -e "\nExample: webshell-handler 'http://10.10.11.34/uploads/shell.php'"
 }
 
 function error() {
@@ -21,12 +15,13 @@ function error() {
 
 if [[ "$1" == "-h" || "$1" == "--help" || "$2" == "-h" || "$2" == "--help" ]]; then
     help
+    exit 0
 fi
 
 if [[ "$#" -ne 1 ]]; then
     error "No url provided"
 
-    echo -e "\nUsage: webshell-handler <URL>"
+    echo -e "\nUsage: webshell-handler <url>"
     exit 1
 fi
 
