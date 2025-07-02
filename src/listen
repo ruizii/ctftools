@@ -6,7 +6,7 @@ YELLOW="\e[33m"
 ENDCOLOR="\e[0m"
 
 if [[ "$#" -ne 2 ]]; then
-    echo -e "\n${RED}[x]${ENDCOLOR} Error: Incorrect number of arguments"
+    echo -e "${RED}[x]${ENDCOLOR} Error: Incorrect number of arguments"
 
     echo -e "\nUsage:"
     echo -e "\tlisten linux <port>"
