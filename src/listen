@@ -9,7 +9,7 @@ if [[ "$#" -ne 2 ]]; then
     echo -e "\n${RED}[x]${ENDCOLOR} Must provide OS and port number to listen"
     echo -e "${YELLOW}[!]${ENDCOLOR} OS options: windows or linux"
 
-    echo -e "\nUsage: shitty-revshell-listener.sh <OS> <PORT>"
+    echo -e "\nUsage: listen <OS> <PORT>"
     exit 1
 fi
 

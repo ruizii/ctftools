@@ -6,8 +6,9 @@ YELLOW="\e[33m"
 ENDCOLOR="\e[0m"
 
 if [[ "$#" -eq 0 ]]; then
-    echo -e "\n${RED}[x]${ENDCOLOR} Option not provided"
-    echo -e "\nUsage: shitty_revshell_payload_generator [OPTION]"
+    echo -e "\n${RED}[x]${ENDCOLOR}Error: Option not provided"
+    echo -e "\nUsage: revshell [OPTION]"
+    exit 1
 fi
 
 IP=$(ip a | grep "tun0" | xargs | cut -d ' ' -f 15 | cut -d '/' -f 1)
@@ -51,7 +52,8 @@ elif [[ "$1" == "python" ]]; then
     fi
 
 else
-    echo -e "\n${RED}[x]${ENDCOLOR} Invalid option"
-    echo -e "\nUsage: shitty_revshell_payload_generator [OPTION]"
-    echo -e "\tValid options: bash, php, nc, python"
+    echo -e "\n${RED}[x]${ENDCOLOR} Error: Invalid option"
+    echo -e "\nUsage: revshell [OPTION]"
+    echo -e "\nValid options: bash, php, nc, python"
+    exit 1
 fi
