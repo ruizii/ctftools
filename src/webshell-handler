@@ -10,7 +10,7 @@ function help() {
 }
 
 function error() {
-    echo -e "\n${RED}[x]${ENDCOLOR} Error: $1"
+    echo -e "${RED}[x]${ENDCOLOR} Error: $1"
 }
 
 if [[ "$1" == "-h" || "$1" == "--help" || "$2" == "-h" || "$2" == "--help" ]]; then
