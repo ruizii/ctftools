@@ -4,7 +4,7 @@ RED="\e[31m"
 ENDCOLOR="\e[0m"
 
 function help() {
-    echo -e "\nUsage: webshell-handler <url>"
+    echo -e "Usage: webshell-handler <url>"
 
     echo -e "\nExample: webshell-handler 'http://10.10.11.34/uploads/shell.php'"
 }
