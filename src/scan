@@ -83,7 +83,7 @@ main() {
         bat_cmd="bat"
     fi
 
-    if (("$udp")); then
+    if ((udp)); then
         sudo nmap -sU -F -sCV -T4 --open -vvv -n "$target" -oN "$current_filename" | "$bat_cmd" -pp -l python
     else
         sudo nmap -sS -p- -sCV -T4 --open -vvv -n "$target" -oN "$current_filename" | "$bat_cmd" -pp -l python
