@@ -1,99 +1,98 @@
 #!/bin/bash
 
-RED="\e[31m"
-ENDCOLOR="\e[0m"
+RED=$'\e[31m'
+GREEN=$'\e[32m'
+BLUE=$'\e[34m'
+RESET=$'\e[0m'
 
-outfile_tcp="tcp_scan.txt"
-outfile_udp="udp_scan.txt"
-udp=0
-help=0
 current_filename=""
-positional_amount=0
-target=""
 
 trap ctrl_c INT
 
-function ctrl_c() {
+ctrl_c() {
     sudo rm -f "$current_filename"
-    echo -e "\n${RED}[x]${ENDCOLOR} Aborting scan" >&2
+    printf "\n%s[X]%s Aborting scan\n" "$RED" "$RESET" >&2
     exit 1
 }
 
-function usage() {
-    echo "Usage: scan [options] <ip>"
-    echo -e "\nOptions:"
-    echo -e "\t-u\tUDP scan"
-    echo -e "\t-o FILE\tOutput file name"
-    echo -e "\t-h \tPrint this message and exit"
+usage() {
+    printf "Usage: %s [options] <ip>\n" "$(basename "$0")"
+    printf "\nOptions:\n"
+    printf "\t-u, --udp\t\tUDP scan\n"
+    printf "\t-o, --outfile <file>\tName of the output file\n"
+    printf "\t-h, --help\t\tPrint this message and exit\n"
 }
 
-while [ "$#" -gt 0 ]; do
-    case "$1" in
-    -u)
-        udp=1
-        current_filename="$outfile_udp"
-        shift 1
-        ;;
-    -o)
-        current_filename="$2"
-        shift 2
-        ;;
-    -h)
-        help=1
-        shift 1
-        ;;
+main() {
+    if ! PARSED=$(getopt -o uo:h --long udp,outfile:,help -n "$0" -- "$@"); then
+        echo "Failed to parse arguments" >&2
+        exit 1
+    fi
 
-    -*)
-        echo -e "${RED}[x]${ENDCOLOR} Error: Invalid option: $1\n" >&2
+    eval set -- "$PARSED"
+
+    local outfile_tcp="tcp_scan.txt"
+    local outfile_udp="udp_scan.txt"
+    local udp=0
+    local target=""
+    local bat_cmd="batcat"
+
+    while true; do
+        case "$1" in
+            -u | --udp)
+                udp=1
+                shift
+                ;;
+            -o | --outfile)
+                current_filename="$2"
+                shift 2
+                ;;
+            -h | --help)
+                usage
+                exit 0
+                ;;
+            --)
+                shift
+                break
+                ;;
+        esac
+    done
+
+    if (($# > 1)); then
+        printf "%s[X]%s Error: Can't have more than 1 positional argument\n\n" "$RED" "$RESET" >&2
         usage
         exit 1
-        ;;
-    *)
-        positional_amount=$((positional_amount + 1))
-        if [[ "$positional_amount" -gt 1 ]]; then
-            echo -e "${RED}[X]${ENDCOLOR} Error: Can't have more than 1 positional argument\n" >&2
-            usage
-            exit 1
+    fi
+
+    target="$1"
+
+    if [[ -z "$current_filename" ]]; then
+        if ((udp)); then
+            current_filename="$outfile_udp"
+        else
+            current_filename="$outfile_tcp"
         fi
-        target="$1"
-        shift 1
-        ;;
-    esac
-done
-
-if [[ "$help" -eq 1 ]]; then
-    usage
-    exit 0
-fi
-
-if [[ -z "$current_filename" ]]; then
-    if [[ "$udp" -eq 1 ]]; then
-        current_filename="$outfile_udp"
-    else
-        current_filename="$outfile_tcp"
     fi
-fi
 
-if [[ -z "$target" ]]; then
-    echo -e "${RED}[x]${ENDCOLOR} Error: Missing IP or hostname\n" >&2
-    usage
-    exit 1
-fi
+    if [[ -z "$target" ]]; then
+        printf "%s[X]%s Error: Missing IP or hostname\n\n" "$RED" "$RESET" >&2
+        usage
+        exit 1
+    fi
 
-if [[ "$udp" -eq 1 ]]; then
     if [[ -f /etc/arch-release ]]; then
-        sudo nmap -sU -F -sCV -T4 --open -vvv -n "$target" -oN "$current_filename" | bat -pp -l python
-        sudo chown "$USER":"$USER" "$current_filename"
-    else
-        sudo nmap -sU -F -sCV -T4 --open -vvv -n "$target" -oN "$current_filename" | batcat -pp -l python
-        sudo chown "$USER":"$USER" "$current_filename"
+        bat_cmd="bat"
     fi
-else
-    if [[ -f /etc/arch-release ]]; then
-        sudo nmap -sS -p- -sCV -T4 --open -vvv -n "$target" -oN "$current_filename" | bat -pp -l python
-        sudo chown "$USER":"$USER" "$current_filename"
+
+    if (("$udp")); then
+        sudo nmap -sU -F -sCV -T4 --open -vvv -n "$target" -oN "$current_filename" | "$bat_cmd" -pp -l python
     else
-        sudo nmap -sS -p- -sCV -T4 --open -vvv -n "$target" -oN "$current_filename" | batcat -pp -l python
-        sudo chown "$USER":"$USER" "$current_filename"
+        sudo nmap -sS -p- -sCV -T4 --open -vvv -n "$target" -oN "$current_filename" | "$bat_cmd" -pp -l python
     fi
-fi
+
+    sudo chown "$USER":"$USER" "$current_filename"
+
+    printf "\n%s[+]%s Scan saved as %s\n" "$BLUE" "$RESET" "$current_filename"
+}
+
+main "$@"
