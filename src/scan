@@ -2,7 +2,6 @@
 
 RED=$'\e[31m'
 GREEN=$'\e[32m'
-BLUE=$'\e[34m'
 RESET=$'\e[0m'
 
 current_filename=""
@@ -92,7 +91,7 @@ main() {
 
     sudo chown "$USER":"$USER" "$current_filename"
 
-    printf "\n%s[+]%s Scan saved as %s\n" "$BLUE" "$RESET" "$current_filename"
+    printf "\n%s[+]%s Scan saved as %s\n" "$GREEN" "$RESET" "$current_filename"
 }
 
 main "$@"
