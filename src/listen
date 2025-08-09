@@ -51,8 +51,8 @@ linux_listener() {
     fix_command=$(generate_linux_fix_command)
 
     echo -n "$fix_command" | $copy_cmd
-    echo -e "\n${YELLOW}[!]${RESET} Fix command copied to clipboard"
-    echo -e "\n${GREEN}[+]${RESET} Listening for Linux reverse shell on port ${BLUE}${port}${RESET}..."
+    echo -e "\n${YELLOW}[!]${RESET} Fix command copied to clipboard:"
+    echo -e "    ${BLUE}$fix_command${RESET}\n"
 
     # Ensure terminal reset
     (
