@@ -2,8 +2,7 @@
 
 RED="\e[31m"
 YELLOW="\e[33m"
-BLUE="\e[34m"
-GREEN="\e[32m"
+CYAN="\e[36m"
 RESET="\e[0m"
 
 usage() {
@@ -52,7 +51,7 @@ linux_listener() {
 
     echo -n "$fix_command" | $copy_cmd
     echo -e "\n${YELLOW}[!]${RESET} Fix command copied to clipboard:"
-    echo -e "    ${BLUE}$fix_command${RESET}\n"
+    echo -e "    ${CYAN}$fix_command${RESET}\n"
 
     # Ensure terminal reset
     (
@@ -66,7 +65,6 @@ linux_listener() {
 
 windows_listener() {
     local port=$1
-    echo -e "\n${GREEN}[+]${RESET} Listening for Windows reverse shell on port ${BLUE}${port}${RESET}..."
     rlwrap ncat -lvnp "$port"
 }
 
