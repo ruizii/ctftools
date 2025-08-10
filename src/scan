@@ -15,7 +15,7 @@ ctrl_c() {
 }
 
 usage() {
-    printf "Usage: %s [options] <ip>\n" "$(basename "$0")"
+    printf "Usage: %s [options] <ip>\n" "${0##*/}"
     printf "\nOptions:\n"
     printf "\t-u, --udp\t\tUDP scan\n"
     printf "\t-o, --outfile <file>\tName of the output file\n"
