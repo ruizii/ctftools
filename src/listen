@@ -6,9 +6,11 @@ CYAN="\e[36m"
 RESET="\e[0m"
 
 usage() {
+    local executable="${0##*/}"
+
     echo -e "\nUsage:"
-    echo -e "\t${0##*/} linux <port>"
-    echo -e "\t${0##*/} windows <port>"
+    echo -e "\t$executable linux <port>"
+    echo -e "\t$executable windows <port>"
 }
 
 validate_port() {
@@ -97,7 +99,7 @@ main() {
             windows_listener "$port"
             ;;
         *)
-            echo -e "${RED}[✘]${RESET} Invalid OS: $target_os" >&2
+            echo -e "${RED}[x]${RESET} Invalid OS: $target_os" >&2
             usage
             exit 1
             ;;
