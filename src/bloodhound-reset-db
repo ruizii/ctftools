@@ -1,0 +1,13 @@
+#!/bin/bash
+
+RED="\e[31m"
+RESET="\e[0m"
+
+if [[ "$#" -ne 1 ]]; then
+    echo -e "${RED}[!]${RESET} Error: Must provide JWT\n"
+    echo "Usage: reset-bloodhound-db <jwt>"
+    exit 1
+fi
+
+curl http://localhost:8080/api/v2/clear-database -H "Authorization: Bearer $1" -H "Content-Type: application/json" -d '{"deleteCollectedGraphData":true,"deleteFIleIngestHistory":true,"deleteDataQualityHistory":true}'
+
