@@ -84,9 +84,9 @@ main() {
     fi
 
     if ((udp)); then
-        sudo nmap -sU -F -sCV -T4 --open -vvv -n "$target" -oN "$current_filename" | "$bat_cmd" -pp -l python
+        sudo nmap -sU -F -sCV -T4 --open -vvv -Pn -n "$target" -oN "$current_filename" | "$bat_cmd" -pp -l python
     else
-        sudo nmap -sS -p- -sCV -T4 --open -vvv -n "$target" -oN "$current_filename" | "$bat_cmd" -pp -l python
+        sudo nmap -sS -p- -sCV -T4 --open -vvv -Pn -n "$target" -oN "$current_filename" | "$bat_cmd" -pp -l python
     fi
 
     sudo chown "$USER":"$USER" "$current_filename"
