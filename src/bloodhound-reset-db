@@ -9,5 +9,4 @@ if [[ "$#" -ne 1 ]]; then
     exit 1
 fi
 
-curl http://localhost:8080/api/v2/clear-database -H "Authorization: Bearer $1" -H "Content-Type: application/json" -d '{"deleteCollectedGraphData":true,"deleteFIleIngestHistory":true,"deleteDataQualityHistory":true}'
-
+curl http://localhost:8081/api/v2/clear-database -H "Authorization: Bearer $1" -H "Content-Type: application/json" -d '{"deleteCollectedGraphData":true,"deleteFIleIngestHistory":true,"deleteDataQualityHistory":true}'
