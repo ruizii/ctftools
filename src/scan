@@ -9,7 +9,7 @@ current_filename=""
 trap ctrl_c INT
 
 ctrl_c() {
-    sudo rm -f "$current_filename"
+    rm -f "$current_filename"
     printf "\n%s[X]%s Aborting scan\n" "$RED" "$RESET" >&2
     exit 1
 }
@@ -84,14 +84,10 @@ main() {
     fi
 
     if ((udp)); then
-        sudo nmap -sU -F -sCV -T4 --open -vvv -Pn -n "$target" -oN "$current_filename" | "$bat_cmd" -pp -l python
+        nmap -sU -F -sCV -T4 --open -vvv -Pn -n "$target" -oN "$current_filename" | "$bat_cmd" -pp -l python
     else
-        sudo nmap -sS -p- -sCV -T4 --open -vvv -Pn -n "$target" -oN "$current_filename" | "$bat_cmd" -pp -l python
+        nmap -sS -p- -sCV -T4 --open -vvv -Pn -n "$target" -oN "$current_filename" | "$bat_cmd" -pp -l python
     fi
-
-    sudo chown "$USER":"$USER" "$current_filename"
 
     printf "\n%s[+]%s Scan saved as %s\n" "$GREEN" "$RESET" "$current_filename"
 }
-
-main "$@"
