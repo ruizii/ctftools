@@ -91,3 +91,5 @@ main() {
 
     printf "\n%s[+]%s Scan saved as %s\n" "$GREEN" "$RESET" "$current_filename"
 }
+
+main "$@"
